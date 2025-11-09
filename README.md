@@ -1,47 +1,212 @@
-# CryptoGPT - AI Crypto Trading Platform
+# CryptoGPT - AI-Powered Cryptocurrency Trading Platform
 
-AI-powered cryptocurrency trading platform with advanced algorithms and machine learning.
+Advanced AI-powered cryptocurrency trading platform. Leverage cutting-edge algorithms and machine learning for optimal trading strategies.
 
-## 🚀 Quick Start
+## 📋 Requirements
 
-**Prerequisites:**
-- Node.js `20.14.0`
-- Yarn (recommended) or npm
+### Node.js
+- **Node.js**: `20.14.0` (required)
+- **Package Manager**: Yarn (recommended) or npm
+
+> ⚠️ **Note**: This project requires Node.js version 20.14.0. Make sure you have the correct version installed before proceeding.
+
+### Check your Node version
+```bash
+node --version
+```
+
+If you need to install or switch Node versions, consider using:
+- [nvm](https://github.com/nvm-sh/nvm) (Node Version Manager)
+- [fnm](https://github.com/Schniz/fnm) (Fast Node Manager)
+
+## 🚀 Getting Started
+
+### Installation
+
+#### Using Yarn (Recommended)
 
 ```bash
-# Install & run
+# Install dependencies
 yarn install
-yarn dev
 
-# App runs on http://localhost:8083
+# Start development server
+yarn dev
 ```
+
+The application will be available at `http://localhost:8083`
+
+#### Using NPM
+
+```bash
+# Install dependencies
+npm install
+# OR if you encounter peer dependency issues:
+npm install --legacy-peer-deps
+
+# Start development server
+npm run dev
+```
+
+## 📜 Available Scripts
+
+- `yarn dev` - Start development server on port 8083
+- `yarn start` - Start production server on port 8083
+- `yarn build` - Build the application for production
+- `yarn lint` - Run ESLint to check code quality
+- `yarn lint:fix` - Automatically fix ESLint issues
+- `yarn prettier` - Format code using Prettier
+- `yarn ts` - Run TypeScript type checking
+- `yarn ts:watch` - Run TypeScript type checking in watch mode
+- `yarn rm:all` - Remove all build artifacts and node_modules
+- `yarn re:start` - Clean install and start development server
+- `yarn re:build` - Clean install and build for production
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: Next.js 14, React 18, TypeScript
-- **UI**: Material-UI, Tailwind CSS
-- **Backend**: Supabase, Trigger.dev
-- **Web3**: wagmi, viem, MetaMask
-- **AI**: OpenAI
-- **Payments**: Stripe
+### Core
+- **Next.js** 14.0.4 - React framework
+- **React** 18.2.0 - UI library
+- **TypeScript** 5.3.3 - Type safety
 
-## 📁 Key Scripts
+### UI & Styling
+- **Material-UI (MUI)** 5.14.20 - Component library
+- **Tailwind CSS** 3.4.1 - Utility-first CSS
+- **Emotion** - CSS-in-JS
+- **Framer Motion** - Animation library
+
+### Backend & Database
+- **Supabase** - Backend as a Service (BaaS)
+- **Trigger.dev** - Background jobs and cron tasks
+
+### Blockchain & Web3
+- **wagmi** 2.9.11 - React Hooks for Ethereum
+- **viem** 2.x - TypeScript Ethereum library
+- **ethers** 6.13.0 - Ethereum library
+- **@metamask/sdk-react** - MetaMask integration
+- **@web3modal/wagmi** - Web3Modal integration
+
+### AI & Machine Learning
+- **OpenAI** 4.53.2 - AI capabilities
+
+### Payment Processing
+- **Stripe** 16.2.0 - Payment processing
+
+### Additional Libraries
+- **Axios** - HTTP client
+- **React Query** - Data fetching
+- **Zustand** - State management
+- **React Hook Form** - Form management
+- **i18next** - Internationalization
+- **ApexCharts** - Charting library
+- **Recharts** - Charting library
+- And many more...
+
+## 🔐 Environment Variables
+
+Create a `.env.local` file in the root directory with the following variables:
+
+```env
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+NEXT_PUBLIC_SUPABASE_JWT_SECRET=your_supabase_jwt_secret
+
+# Add other environment variables as needed
+```
+
+> ⚠️ **Important**: Never commit `.env.local` or any environment files to version control. They are already included in `.gitignore`.
+
+## 📁 Project Structure
+
+```
+root/
+├── src/
+│   ├── app/              # Next.js app router pages
+│   │   ├── api/          # API routes
+│   │   ├── auth/         # Authentication pages
+│   │   ├── dashboard/    # Dashboard pages
+│   │   └── home/         # Home page
+│   ├── components/       # Reusable UI components
+│   ├── sections/         # Page sections
+│   ├── layouts/          # Layout components
+│   ├── theme/            # Theme configuration
+│   ├── hooks/            # Custom React hooks
+│   ├── lib/              # Utility libraries
+│   ├── routes/           # Route configuration
+│   ├── store/            # State management
+│   ├── types/            # TypeScript type definitions
+│   ├── utils/            # Utility functions
+│   └── trigger/          # Trigger.dev jobs
+├── public/               # Static assets
+├── .next/                # Next.js build output (generated)
+└── node_modules/         # Dependencies (generated)
+```
+
+## 🔧 Configuration
+
+### Next.js Configuration
+- Port: `8083`
+- Trailing slash: Enabled
+- Image domains: Configured in `next.config.js`
+
+### TypeScript Configuration
+- Strict mode: Enabled
+- Target: ES5
+- Module: ESNext
+
+### ESLint Configuration
+- Airbnb configuration
+- TypeScript support
+- Prettier integration
+
+## 🚢 Deployment
+
+### Build for Production
 
 ```bash
-yarn dev      # Start development
-yarn build    # Build for production
-yarn lint     # Code quality check
-yarn ts       # Type checking
+yarn build
 ```
 
-## 🔐 Environment Setup
+### Start Production Server
 
-Create `.env.local`:
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
+```bash
+yarn start
 ```
+
+## 📝 Development Guidelines
+
+1. **Code Style**: Follow the ESLint and Prettier configurations
+2. **Type Safety**: Always use TypeScript types
+3. **Components**: Use functional components with hooks
+4. **State Management**: Use Zustand for global state
+5. **API Routes**: Use Next.js API routes in `src/app/api/`
+6. **Styling**: Prefer Material-UI components with custom styling when needed
+
+## 🤝 Contributing
+
+1. Create a feature branch
+2. Make your changes
+3. Run `yarn lint` and `yarn ts` to check for errors
+4. Commit your changes
+5. Push to the branch
+6. Create a Pull Request
+
+## 📄 License
+
+This project is private and proprietary.
+
+## 🔗 Links
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Material-UI Documentation](https://mui.com/)
+- [Supabase Documentation](https://supabase.com/docs)
+- [Trigger.dev Documentation](https://trigger.dev/docs)
+
+## 📞 Support
+
+For support and questions, please contact the development team.
 
 ---
 
-**Built with Next.js, React & TypeScript**
+**Built with ❤️ using Next.js, React, and TypeScript**
