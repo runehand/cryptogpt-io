@@ -27,7 +27,7 @@ export default function StrategyView() {
   const setIsShowSummary = useStrategy((state) => state.setIsShowSummary);
   const smUp = useResponsive("up", 'sm');
   const [text, setText] = useState('');
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+  const [timeoutId, setTimeoutId] = useState<ReturnType<typeof setTimeout> | null>(null);
 
   const carousel = useCarousel({
     infinite: true,
