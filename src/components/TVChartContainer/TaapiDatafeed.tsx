@@ -9,7 +9,7 @@ import {
 } from "public/static/charting_library/charting_library";
 
 const TaapiDatafeedFunc = (apiKey: string): IBasicDataFeed => {
-    const subscribers: { [key: string]: NodeJS.Timeout } = {};
+    const subscribers: { [key: string]: ReturnType<typeof setInterval> } = {};
     let symbolCache: { [key: string]: any } | null = null;
     const barsCache: { [key: string]: Bar[] } = {};
 

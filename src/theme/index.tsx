@@ -29,6 +29,7 @@ type Props = {
 
 export default function ThemeProvider({ children }: Props) {
   const settings = useSettingsContext();
+  const isClient = typeof window !== 'undefined';
 
   const presets = createPresets(settings.themeColorPresets);
 
@@ -67,18 +68,25 @@ export default function ThemeProvider({ children }: Props) {
     <NextAppDirEmotionCacheProvider options={{ key: 'css' }}>
       <MuiThemeProvider theme={theme}>
         <RTL themeDirection={settings.themeDirection}>
-          <MetaMaskProvider
-            debug={false}
-            sdkOptions={{
-              dappMetadata: {
-                name: 'CryptoGPT',
-                url: window.location.href,
-              },
-            }}
-          >
-            <CssBaseline />
-            {children}
-          </MetaMaskProvider>
+          {isClient ? (
+            <MetaMaskProvider
+              debug={false}
+              sdkOptions={{
+                dappMetadata: {
+                  name: 'CryptoGPT',
+                  url: window.location.href,
+                },
+              }}
+            >
+              <CssBaseline />
+              {children}
+            </MetaMaskProvider>
+          ) : (
+            <>
+              <CssBaseline />
+              {children}
+            </>
+          )}
         </RTL>
       </MuiThemeProvider>
     </NextAppDirEmotionCacheProvider>

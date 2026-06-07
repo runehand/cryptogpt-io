@@ -66,13 +66,17 @@ const OverviewPlanUsage: React.FC = () => {
 	}, [user]);
 
 	useEffect(() => {
-		let interval: NodeJS.Timeout;
+		let interval: ReturnType<typeof setInterval> | undefined;
 		if (usageData.length > 0) {
 			interval = setInterval(() => {
 				setCurrentIndex((prevIndex) => (prevIndex + 1) % usageData.length);
 			}, 2500);
 		}
-		return () => clearInterval(interval);
+		return () => {
+			if (interval) {
+				clearInterval(interval);
+			}
+		};
 	}, [usageData, setCurrentIndex]);
 
 	useEffect(() => {

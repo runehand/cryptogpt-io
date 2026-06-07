@@ -572,17 +572,6 @@ export default function StrategyChat({
                     )
                 }
 
-                {
-                    null && <Box sx={{
-                        width: '100%',
-                        height: '100%',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                    }}>
-                        <Button variant="outlined" color="primary">Conversations</Button>
-                    </Box>
-                }
             </Box>
 
             <ChatInput sx={{

@@ -5,6 +5,8 @@ import path from 'path';
 import QRCode from 'qrcode';
 import { NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+
 function generateRandomFilename(length: number = 32): string {
   const letters = 'abcdefghijklmnopqrstuvwxyz1234567890';
   let result: string = '';
@@ -41,7 +43,7 @@ const uploadImage = async (imageData: Buffer) => {
       const response = await fetch(url, {
         method: 'PUT',
         headers,
-        body: imageData,
+        body: imageData as unknown as BodyInit,
       });
 
       if (response.status === 201) {
