@@ -1,15 +1,15 @@
 import Image from 'next/image';
-import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { Line, XAxis, YAxis, Tooltip, LineChart, ResponsiveContainer } from 'recharts';
 
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import {
   Box,
-  Card,
-  Table,
   Tab,
+  Card,
   Tabs,
+  Table,
   alpha,
   Button,
   TableRow,
@@ -20,8 +20,6 @@ import {
   Pagination,
   CircularProgress,
 } from '@mui/material';
-
-import { useMetaMask } from 'src/routes/hooks/useMetaMask';
 
 import axios, { endpoints } from 'src/utils/axios';
 
@@ -49,7 +47,6 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 const OverviewCredit: React.FC = () => {
   const { eth, usdt, usdc, crgpt, dot, sol, avax } = useTokenBalances();
-  const { currentBalance } = useMetaMask();
   const [prices, setPrices] = useState<{ [key: string]: number }>({});
   const [priceHistory, setPriceHistory] = useState<{
     [key: string]: { time: number; price: number }[];
@@ -167,11 +164,11 @@ const OverviewCredit: React.FC = () => {
     }
   }, [prices]);
 
-  useEffect(() => {
-    fetchPrices();
-    const interval = setInterval(fetchPrices, 20000);
-    return () => clearInterval(interval);
-  }, [fetchPrices]);
+  fetchPrices();
+  // useEffect(() => {
+  //   // const interval = setInterval(fetchPrices, 20000000) //  realtime 20000;;
+  //   // return () => clearInterval(interval);
+  // }, [fetchPrices]);
 
   const getChartDomain = (token: string) => {
     if (token === 'USDT' || token === 'USDC') {

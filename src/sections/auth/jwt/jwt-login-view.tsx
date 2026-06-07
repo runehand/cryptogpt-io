@@ -20,12 +20,11 @@ import {
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
-import { useMetaMask } from 'src/routes/hooks/useMetaMask';
 import { useRouter, useSearchParams } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useMetaMask } from 'src/hooks/use-metamask';
 
-import axios, { endpoints } from 'src/utils/axios';
 import { isEmail, isPhoneNumber } from 'src/utils/validators';
 
 import { supabase } from 'src/lib/supabase';
@@ -38,8 +37,13 @@ import { useSnackbar } from 'src/components/snackbar';
 // ----------------------------------------------------------------------
 
 export default function JwtLoginView() {
-  const { loginWithEmailAndPassword, loginWithCodeSend, loginWithCodeVerify, loginWithMetamask } =
-    useAuthContext();
+  const {
+    loginWithEmailAndPassword,
+    loginWithCodeSend,
+    loginWithCodeVerify,
+    loginWithMetamask,
+    loginAsDemoUser,
+  } = useAuthContext();
   const metaMask = useMetaMask();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -105,24 +109,27 @@ export default function JwtLoginView() {
     isSubmitting.onTrue();
     try {
       await loginWithEmailAndPassword(email, password);
-      try {
-        const response = await axios.get(endpoints.profile.index);
-        console.log('test', response.data);
-        console.log('test', !response.data?.length);
-        console.log('test', !response.data[0]?.terms);
-        if (!response.data?.length || !response.data[0]?.terms) {
-          router.push(paths.dashboard.user.profileSetup);
-        } else {
-          router.push(returnTo || paths.dashboard.root);
-        }
-      } catch (err) {
-        console.error('Error fetching user profile:', err);
-        setErrorMsg(`Error fetching user profile: ${err}`);
-      }
+      enqueueSnackbar('Login successful', { variant: 'success' });
       isSubmitting.onFalse();
     } catch (error) {
       console.error(error);
       setErrorMsg(typeof error === 'string' ? error : error.message);
+      isSubmitting.onFalse();
+    }
+  };
+
+  const handleDemoLogin = async () => {
+    setErrorMsg('');
+    isSubmitting.onTrue();
+    try {
+      await loginAsDemoUser();
+      enqueueSnackbar('Demo user loaded', { variant: 'success' });
+      router.replace(returnTo || paths.dashboard.root);
+    } catch (error) {
+      console.error(error);
+      setErrorMsg(typeof error === 'string' ? error : error.message);
+      enqueueSnackbar('Failed to load demo user', { variant: 'error' });
+    } finally {
       isSubmitting.onFalse();
     }
   };
@@ -301,7 +308,12 @@ export default function JwtLoginView() {
         {isEmailWithPasswordCase.value && (
           <Stack spacing={1}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Typography variant="subtitle2" sx={{ color: 'primary.main' }}>
+              <Typography variant="subtitle2" sx={{
+                color: 'primary.main',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}>
                 {email || 'Email'}
               </Typography>
               <IconButton onClick={isEmailWithPasswordCase.onToggle}>
@@ -385,6 +397,16 @@ export default function JwtLoginView() {
 
         <Divider />
 
+        <LoadingButton
+          fullWidth
+          variant="outlined"
+          color="primary"
+          loading={isSubmitting.value}
+          onClick={handleDemoLogin}
+        >
+          Continue as Demo User
+        </LoadingButton>
+
         <Button
           fullWidth
           endIcon={
@@ -397,6 +419,9 @@ export default function JwtLoginView() {
             />
           }
           onClick={isShowLoginOptions.onToggle}
+          sx={{
+            mb: 2,
+          }}
         >
           More options
         </Button>

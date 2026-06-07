@@ -1,4 +1,4 @@
-import { DashboardAccountView } from 'src/sections/users/account/view';
+import { AccountView } from 'src/sections/users/account/view';
 
 // ----------------------------------------------------------------------
 
@@ -7,5 +7,5 @@ export const metadata = {
 };
 
 export default function Page() {
-  return <DashboardAccountView />;
+  return <AccountView />;
 }

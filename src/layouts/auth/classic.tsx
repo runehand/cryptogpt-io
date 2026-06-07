@@ -5,6 +5,8 @@ import { alpha, useTheme } from '@mui/material/styles';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
+import { endpoints } from 'src/utils/axios';
+
 import { bgGradient } from 'src/theme/css';
 
 import Logo from 'src/components/logo';
@@ -101,7 +103,7 @@ export default function AuthClassicLayout({ children, image, title }: Props) {
       }}
     >
 
-      <video autoPlay style={{
+      <video autoPlay loop muted playsInline style={{
         zIndex: -1,
         position: 'fixed',
         top: 0,
@@ -110,7 +112,7 @@ export default function AuthClassicLayout({ children, image, title }: Props) {
         height: '100%',
         objectFit: 'cover',
       }}>
-        <source src="/assets/videos/background.mp4" type="video/mp4" />
+        <source src={endpoints.video('background.mp4')} type="video/mp4" />
         <track kind="captions" src="captions.vtt" srcLang="en" label="English" />
         Your browser does not support the video tag.
       </video>

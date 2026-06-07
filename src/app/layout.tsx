@@ -1,7 +1,3 @@
-
-import { headers } from 'next/headers'
-import { cookieToInitialState } from 'wagmi'
-
 import 'src/styles.css';
 import 'src/global.css';
 import 'src/converted-styles.css';
@@ -9,8 +5,6 @@ import 'src/converted-styles.css';
 // ----------------------------------------------------------------------
 
 import ThemeProvider from 'src/theme';
-import { config } from 'src/web3/config';
-import Web3ModalProvider from 'src/web3/context';
 import { LocalizationProvider } from 'src/locales';
 import { AuthProvider } from 'src/auth/context/jwt';
 import { TokenSection } from 'src/provider/TokenProvider';
@@ -40,7 +34,6 @@ export const metadata = {
   keywords: 'cryptocurrency,trading,AI,machine learning,blockchain,crypto,investment,algorithm',
   manifest: '/manifest.json',
   icons: [
-    { rel: 'icon', url: '/favicon/favicon.ico' },
     { rel: 'icon', type: 'image/png', sizes: '16x16', url: '/favicon/favicon-16x16.png' },
     { rel: 'icon', type: 'image/png', sizes: '32x32', url: '/favicon/favicon-32x32.png' },
     { rel: 'apple-touch-icon', sizes: '180x180', url: '/favicon/apple-touch-icon.png' },
@@ -52,44 +45,40 @@ type Props = {
 };
 
 export default function RootLayout({ children }: Props) {
-  const initialState = cookieToInitialState(config, headers().get('cookie'))
-
   return (
     <html lang="en" className="">
       <body>
-        <Web3ModalProvider initialState={initialState}>
-          <AuthProvider>
-            <LocalizationProvider>
-              <SettingsProvider
-                defaultSettings={{
-                  themeMode: 'dark', // 'light' | 'dark'
-                  themeDirection: 'ltr', //  'rtl' | 'ltr'
-                  themeContrast: 'default', // 'default' | 'bold'
-                  themeLayout: 'vertical', // 'vertical' | 'horizontal' | 'mini'
-                  themeColorPresets: 'orange', // 'default' | 'cyan' | 'purple' | 'blue' | 'orange' | 'red'
-                  themeStretch: false,
-                }}
-              >
-                <ThemeProvider>
-                  <MembershipPlansProvider>
-                    <UserMembershipPlansProvider>
-                      <MotionLazy>
-                        <SnackbarProvider>
-                          <TokenSection>
-                            <SettingsDrawer />
-                            <ProgressBar />
-                            {children}
-                            <ChatbotBubble />
-                          </TokenSection>
-                        </SnackbarProvider>
-                      </MotionLazy>
-                    </UserMembershipPlansProvider>
-                  </MembershipPlansProvider>
-                </ThemeProvider>
-              </SettingsProvider>
-            </LocalizationProvider>
-          </AuthProvider>
-        </Web3ModalProvider>
+        <AuthProvider>
+          <LocalizationProvider>
+            <SettingsProvider
+              defaultSettings={{
+                themeMode: 'dark', // 'light' | 'dark'
+                themeDirection: 'ltr', //  'rtl' | 'ltr'
+                themeContrast: 'default', // 'default' | 'bold'
+                themeLayout: 'vertical', // 'vertical' | 'horizontal' | 'mini'
+                themeColorPresets: 'orange', // 'default' | 'cyan' | 'purple' | 'blue' | 'orange' | 'red'
+                themeStretch: false,
+              }}
+            >
+              <ThemeProvider>
+                <MembershipPlansProvider>
+                  <UserMembershipPlansProvider>
+                    <MotionLazy>
+                      <SnackbarProvider>
+                        <TokenSection>
+                          <SettingsDrawer />
+                          <ProgressBar />
+                          {children}
+                          <ChatbotBubble />
+                        </TokenSection>
+                      </SnackbarProvider>
+                    </MotionLazy>
+                  </UserMembershipPlansProvider>
+                </MembershipPlansProvider>
+              </ThemeProvider>
+            </SettingsProvider>
+          </LocalizationProvider>
+        </AuthProvider>
       </body>
     </html>
   );

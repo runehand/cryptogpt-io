@@ -12,7 +12,7 @@ import { useStrategy } from "src/store/strategy/useStrategy";
 import Iconify from 'src/components/iconify';
 import Image from 'src/components/image/image';
 
-import DashboardStrategyTableWithDetail from '../dashboard-strategy-table-with-detail';
+import StrategyTableWithDetail from '../strategy-table-with-detail';
 
 interface DataPoint {
     date: string;
@@ -22,11 +22,11 @@ interface DataPoint {
 }
 
 
-interface DashboardStrategyStep4BetaProps extends BoxProps {
+interface StrategyStep4BetaProps extends BoxProps {
 
 };
 
-export default function DashboardStrategyStep4Beta({ sx, ...other }: DashboardStrategyStep4BetaProps) {
+export default function StrategyStep4Beta({ sx, ...other }: StrategyStep4BetaProps) {
     const coin1 = useStrategy((state) => state.coin1);
     const setCoin1 = useStrategy((state) => state.setCoin1);
     const coin2 = useStrategy((state) => state.coin2);
@@ -139,7 +139,7 @@ export default function DashboardStrategyStep4Beta({ sx, ...other }: DashboardSt
                         <Typography variant="h6" sx={{ color: 'primary.main' }}>Backtesting Data</Typography>
                     </Stack>
 
-                    <DashboardStrategyTableWithDetail />
+                    <StrategyTableWithDetail />
                 </Box>
             </Box>
 

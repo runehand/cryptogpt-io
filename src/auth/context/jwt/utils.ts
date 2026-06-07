@@ -2,6 +2,14 @@ import { paths } from 'src/routes/paths';
 
 import axios, { endpoints } from 'src/utils/axios';
 
+import {
+  DEMO_USER,
+  setDemoSession,
+  DEMO_ACCESS_TOKEN,
+  DEMO_USER_PROFILE,
+  isDemoSessionEnabled,
+} from 'src/auth/demo-user';
+
 // ----------------------------------------------------------------------
 
 function jwtDecode(token: string) {
@@ -23,6 +31,10 @@ function jwtDecode(token: string) {
 export const isValidToken = (accessToken: string) => {
   if (!accessToken) {
     return false;
+  }
+
+  if (accessToken === DEMO_ACCESS_TOKEN) {
+    return true;
   }
 
   const decoded = jwtDecode(accessToken);
@@ -55,35 +67,77 @@ export const tokenExpired = (exp: number) => {
 // ----------------------------------------------------------------------
 
 export const loadUserProfileData = async (flag: boolean = true) => {
+  if (isDemoSessionEnabled()) {
+    localStorage.setItem('userProfile', JSON.stringify(DEMO_USER_PROFILE));
+    return DEMO_USER_PROFILE;
+  }
+
   if (flag) {
-    const response = await axios.get(endpoints.profile.index);
-    if (response.data?.length) {
-      localStorage.setItem('userProfile', JSON.stringify(response.data[0]));
-    } else {
+    try {
+      const response = await axios.get(endpoints.profile.index);
+      if (response.data) {
+        localStorage.setItem('userProfile', JSON.stringify(response.data));
+        return response.data;
+      }
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
       localStorage.setItem('userProfile', JSON.stringify({}));
+      return {};
     }
-  } else {
-    localStorage.setItem('userProfile', JSON.stringify({}));
+  }
+  localStorage.setItem('userProfile', JSON.stringify({}));
+  return {};
+};
+
+export const loadUserData = async (accessToken) => {
+  if (accessToken === DEMO_ACCESS_TOKEN || isDemoSessionEnabled()) {
+    localStorage.setItem('user', JSON.stringify(DEMO_USER));
+    return DEMO_USER;
+  }
+
+  try {
+    const response = await axios.get(`${endpoints.auth.me}?token=${accessToken}`);
+    localStorage.setItem('user', JSON.stringify(response.data.data.user));
+    return response.data.data.user;
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    localStorage.setItem('user', JSON.stringify({}));
+    return {};
   }
 };
+
+export const getUserProfileData = () => {
+  const userProfileInfoByString = localStorage.getItem('userProfile');
+  if (userProfileInfoByString) return JSON.parse(userProfileInfoByString);
+  return {};
+}
 
 export const setAccessToken = async (accessToken: string | null) => {
   if (accessToken) {
     localStorage.setItem('access_token', accessToken);
 
+    if (accessToken === DEMO_ACCESS_TOKEN || isDemoSessionEnabled()) {
+      setDemoSession();
+      delete axios.defaults.headers.common.Authorization;
+      return { userInfo: DEMO_USER, userProfileInfo: DEMO_USER_PROFILE };
+    }
+
     axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
     axios.defaults.headers.common['Content-Type'] = `application/json`;
 
-    await loadUserProfileData();
+    const userProfileInfo = await loadUserProfileData();
+    const userInfo = await loadUserData(accessToken);
 
     // This function below will handle when token is expired
     const { exp } = jwtDecode(accessToken); // ~3 days by minimals server
     tokenExpired(exp);
-  } else {
-    localStorage.removeItem('access_token');
 
-    delete axios.defaults.headers.common.Authorization;
+    return { userInfo, userProfileInfo };
   }
+
+  localStorage.removeItem('access_token');
+  delete axios.defaults.headers.common.Authorization;
+  return { userInfo: {}, userProfileInfo: {} };
 };
 
 export const getAccessToken = () => localStorage.getItem('access_token');
@@ -110,11 +164,5 @@ export const setUserInfo = (user: any) => {
 export const getUserInfo = () => {
   const userInfoByString = localStorage.getItem('user');
   if (userInfoByString) return JSON.parse(userInfoByString);
-  return {};
-}
-
-export const getUserProfileInfo = () => {
-  const userProfileInfoByString = localStorage.getItem('userProfile');
-  if (userProfileInfoByString) return JSON.parse(userProfileInfoByString);
   return {};
 }

@@ -108,9 +108,8 @@ export async function POST(req: Request) {
         'Content-Type': 'application/json'
       }
     });
-
     if (response.data?.id) {
-      const { error: updateTransactionError }: any = await supabase.from("user_crgpt_token_history").update({ status: "paid" }).eq("id", transaction_id);
+      const { error: updateTransactionError }: any = await supabase.from("user_crgpt_token_history").update({ status: "blockchain_processing", 'w_id': response.data.id   }).eq("id", transaction_id);
 
       if (updateTransactionError)
         return NextResponse.json(

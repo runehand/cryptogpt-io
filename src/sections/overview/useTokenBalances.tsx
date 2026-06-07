@@ -1,5 +1,7 @@
-import { formatUnits } from 'viem'
-import { useToken, useAccount, useBalance } from 'wagmi'
+import { ethers } from 'ethers';
+import { useState, useEffect } from 'react';
+
+import { useMetaMask } from 'src/hooks/use-metamask';
 
 // Define token addresses (use mainnet addresses)
 const USDT_ADDRESS = '0xdAC17F958D2ee523a2206206994597C13D831ec7'
@@ -9,57 +11,66 @@ const DOT_ADDRESS = '0x7083609fce4d1d8dc0c979aab8c869ea2c873402'
 const AVAX_ADDRESS = '0x85f138bfEE4ef8e540890CFb48F620571d67Eda3'
 const SOL_ADDRESS = '0xD31a59c85aE9D8edEFeC411D448f90841571b89c'
 
+// ABI for ERC20 token balance
+const ERC20_ABI = [
+    'function balanceOf(address owner) view returns (uint256)',
+    'function decimals() view returns (uint8)',
+];
+
 export function useTokenBalances() {
-    const { address } = useAccount()
+    const { currentAccount, provider } = useMetaMask();
+    const [balances, setBalances] = useState({
+        eth: '0',
+        usdt: '0',
+        usdc: '0',
+        crgpt: '0',
+        dot: '0',
+        sol: '0',
+        avax: '0',
+    });
 
-    const { data: ethBalance } = useBalance({
-        address,
-    })
+    useEffect(() => {
+        const fetchBalances = async () => {
+            if (!currentAccount || !provider) return;
 
-    const { data: usdtBalance } = useBalance({
-        address,
-        token: USDT_ADDRESS,
-    })
+            const ethersProvider = new ethers.BrowserProvider(provider);
+            const signer = await ethersProvider.getSigner();
 
-    const { data: usdcBalance } = useBalance({
-        address,
-        token: USDC_ADDRESS,
-    })
+            // Fetch ETH balance
+            const ethBalance = await ethersProvider.getBalance(currentAccount);
+            const formattedEthBalance = ethers.formatEther(ethBalance);
 
-    const { data: crgptBalance } = useBalance({
-        address,
-        token: CRGPT_ADDRESS,
-    })
+            // Function to fetch ERC20 token balance
+            const getTokenBalance = async (tokenAddress) => {
+                const contract = new ethers.Contract(tokenAddress, ERC20_ABI, signer);
+                const balance = await contract.balanceOf(currentAccount);
+                const decimals = await contract.decimals();
+                return ethers.formatUnits(balance, decimals);
+            };
 
-    const { data: dotBalance } = useBalance({
-        address,
-        token: DOT_ADDRESS,
-    })
+            // Fetch token balances
+            const [usdt, usdc, crgpt, dot, sol, avax] = await Promise.all([
+                getTokenBalance(USDT_ADDRESS).catch(() => '0'),
+                getTokenBalance(USDC_ADDRESS).catch(() => '0'),
+                getTokenBalance(CRGPT_ADDRESS).catch(() => '0'),
+                getTokenBalance(DOT_ADDRESS).catch(() => '0'),
+                getTokenBalance(SOL_ADDRESS).catch(() => '0'),
+                getTokenBalance(AVAX_ADDRESS).catch(() => '0'),
+            ]);
 
-    const { data: solBalance } = useBalance({
-        address,
-        token: SOL_ADDRESS,
-    })
+            setBalances({
+                eth: formattedEthBalance,
+                usdt,
+                usdc,
+                crgpt,
+                dot,
+                sol,
+                avax,
+            });
+        };
 
-    const { data: avaxBalance } = useBalance({
-        address,
-        token: AVAX_ADDRESS,
-    })
+        fetchBalances();
+    }, [currentAccount, provider]);
 
-    // For custom tokens, fetch decimals
-    const { data: crgptToken } = useToken({
-        address: CRGPT_ADDRESS,
-    })
-
-
-
-    return {
-        eth: ethBalance?.formatted || '0',
-        usdt: usdtBalance ? formatUnits(usdtBalance.value, usdtBalance.decimals) : '0',
-        usdc: usdcBalance ? formatUnits(usdcBalance.value, usdcBalance.decimals) : '0',
-        crgpt: crgptBalance ? formatUnits(crgptBalance.value, crgptToken?.decimals || 18) : '0',
-        dot: dotBalance ? formatUnits(dotBalance.value, dotBalance?.decimals) : '0',
-        sol: solBalance ? formatUnits(solBalance.value, solBalance?.decimals) : '0',
-        avax: avaxBalance ? formatUnits(avaxBalance.value, avaxBalance?.decimals) : '0',
-    }
+    return balances;
 }

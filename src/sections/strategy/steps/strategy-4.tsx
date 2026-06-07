@@ -11,7 +11,7 @@ import { useStrategy } from "src/store/strategy/useStrategy";
 import Iconify from 'src/components/iconify';
 import Image from 'src/components/image/image';
 
-import DashboardStrategyGraph1 from '../dashboard-strategy-graph1';
+import StrategyGraph1 from '../strategy-graph1';
 
 
 interface DataPoint {
@@ -22,11 +22,11 @@ interface DataPoint {
 }
 
 
-interface DashboardStrategyStep1Props extends BoxProps {
+interface StrategyStep1Props extends BoxProps {
 
 };
 
-export default function DashboardStrategyStep4({ sx, ...other }: DashboardStrategyStep1Props) {
+export default function StrategyStep4({ sx, ...other }: StrategyStep1Props) {
     const coin1 = useStrategy((state) => state.coin1);
     const setCoin1 = useStrategy((state) => state.setCoin1);
     const coin2 = useStrategy((state) => state.coin2);
@@ -206,7 +206,7 @@ export default function DashboardStrategyStep4({ sx, ...other }: DashboardStrate
                 width: '100%',
                 aspectRatio: '1 / 1',
             }}>
-                <DashboardStrategyGraph1 />
+                <StrategyGraph1 />
                 {/* <CryptoStrategyKnowledgeGraph /> */}
             </Box>
         </Box>

@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import { NextRequest, NextResponse } from 'next/server';
+
 import { signToken } from 'src/lib/utils';
 import { supabase, supabaseServiceRole } from 'src/lib/supabase';
 
@@ -24,33 +25,42 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid nonce or signature' }, { status: 401 });
     }
 
-    let userId;
-    const { data: authUser, error: authUserError } = await supabase
+    let authUser;
+    const { data: existingAuthUser, error: existingAuthError } = await supabase
       .from('auth_users')
       .select('id')
       .eq('raw_user_meta_data->>address', address)
       .single();
 
-    if (!authUser) {
-      const { data: newUser, error: newUserError } =
-        await supabaseServiceRole.auth.admin.createUser({
-          email: '',
-          user_metadata: { address },
-          email_confirm: true,
-        });
+    if (!existingAuthUser) {
+      const { data: newUser, error: newUserError } = await supabaseServiceRole.auth.admin.createUser({
+        email: `${address}@cryptogpt.io`,
+        user_metadata: { address },
+        email_confirm: true,
+      });
 
       if (newUserError || !newUser) {
-        return NextResponse.json({ error: 'Could not login to Metamask' }, { status: 400 });
+        return NextResponse.json({ error: 'Could not create user' }, { status: 400 });
       }
-      userId = newUser.user.id;
+      authUser = newUser.user;
     } else {
-      userId = authUser.id;
+      authUser = existingAuthUser;
     }
+
+    // // Create a new session
+    // const supabaseServer = createCustomServerClient();
+    // const { data: session, error: sessionError } = await supabaseServer.auth.admin.createSession({
+    //   user_id: authUser.id
+    // });
+
+    // if (sessionError) {
+    //   return NextResponse.json({ error: 'Could not create session' }, { status: 400 });
+    // }
 
     const { error: updateError } = await supabase
       .from('users')
       .update({
-        userId,
+        userId: authUser.id,
         metamask_nonce: nonce,
         auth: {
           lastLoggedinTime: new Date().toISOString(),
@@ -65,10 +75,10 @@ export async function POST(req: NextRequest) {
     }
 
     const token = await signToken(
-      { address, sub: userId, aud: 'authenticated' },
+      { address, sub: authUser.id, aud: 'authenticated' },
       { expiresIn: '24h' }
     );
-    return NextResponse.json({ token, user: { id: userId, address } }, { status: 200 });
+    return NextResponse.json({ token, user: { id: authUser.id, address } }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: 'Could not login to Metamask' }, { status: 400 });
   }

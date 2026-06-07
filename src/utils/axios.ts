@@ -28,7 +28,7 @@ export const fetcher = async (args: string | [string, AxiosRequestConfig]) => {
 export const endpoints = {
   chat: '/api/chat',
   auth: {
-    me: '/api/check-auth/',
+    me: '/api/auth/me',
     register: '/api/auth/signup/',
     logout: '/api/auth/signout/',
     loginWithEmailAndPassword: '/api/auth/signin-email-password/',
@@ -109,6 +109,7 @@ export const endpoints = {
     exchange: '/api/exchanges',
     exchange_keys: '/api/exchanges/key',
     status: '/api/profile/status',
+    social: '/api/profile/social',
   },
   history: {
     crgptToken: '/api/history/crgpt-token',
@@ -116,6 +117,7 @@ export const endpoints = {
     balance: '/api/history/crgpt-token/balance',
     approve: '/api/history/crgpt-token/withdraw',
     price: '/api/history/crgpt-token/price',
+    updateAddress: '/api/history/crgpt-token/update-address',
   },
   exchange: {
     index: '/api/exchanges',
@@ -125,5 +127,6 @@ export const endpoints = {
     index: '/api/strategies',
     initial_prompt: '/api/strategies/initial-prompt',
   },
+  video: (url: string) => `/api/video-stream?url=${url}`,
 };
 

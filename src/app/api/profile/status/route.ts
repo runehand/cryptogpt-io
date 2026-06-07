@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
         console.log('body', body);
 
-        const { id, label, type, color, icon } = body;
+        const { id, label, type, color, icon, is_default } = body;
 
         const { data, error } = await supabase
             .from('user_status')
@@ -23,8 +23,10 @@ export async function POST(req: NextRequest) {
                 type,
                 color,
                 icon,
+                is_default,
             })
             .select();
+
 
         if (error) {
             return NextResponse.json({ error: error.message }, { status: 500 });

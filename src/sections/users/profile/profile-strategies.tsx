@@ -8,7 +8,7 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import Iconify from 'src/components/iconify';
 import Image from 'src/components/image/image';
 
-import StrategyListCard from 'src/sections/strategy/dashboard-strategy-list-card';
+import StrategyListCard from 'src/sections/strategy/strategy-list-card';
 
 
 interface Strategy {

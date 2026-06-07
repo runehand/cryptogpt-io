@@ -1,9 +1,11 @@
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
+import { useState, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
+import { Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -11,6 +13,8 @@ import InputAdornment from '@mui/material/InputAdornment';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import axios, { endpoints } from 'src/utils/axios';
+
+import { useUserProfile } from 'src/store/user/userProfile';
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
@@ -22,6 +26,21 @@ export default function AccountChangePassword() {
   const { enqueueSnackbar } = useSnackbar();
 
   const password = useBoolean();
+  const userInfo = useUserProfile((state) => state.userInfo);
+  const [usedAuthType, setUsedAuthType] = useState("");
+
+  useEffect(() => {
+    if (userInfo.app_metadata && userInfo.app_metadata.provider) {
+      if (userInfo.app_metadata.provider === "email" && userInfo.user_metadata.address) {
+        setUsedAuthType("metamask");
+      }
+      else {
+        setUsedAuthType(userInfo.app_metadata.provider);
+      }
+    } else {
+      setUsedAuthType("noexist");
+    }
+  }, [userInfo])
 
   const ChangePassWordSchema = Yup.object().shape({
     // oldPassword: Yup.string().required('Old Password is required'),
@@ -56,9 +75,10 @@ export default function AccountChangePassword() {
   const onSubmit = handleSubmit(async (data) => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
-      const res = await axios.post(endpoints.auth.passwordUpdate, {
-        new_password: data.newPassword,
-        confirm_password: data.confirmNewPassword,
+      const res = await axios.post(endpoints.profile.setPassword, {
+        // old_password: data.oldPassword,
+        password: data.newPassword,
+        rpassword: data.confirmNewPassword,
       });
       const { status, message } = res.data;
       if (status === false) {
@@ -75,24 +95,32 @@ export default function AccountChangePassword() {
 
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
+      {
+        usedAuthType &&
+        <Typography variant="h5" sx={{ mb: 2 }}>You login through {usedAuthType[0].toUpperCase() + usedAuthType.slice(1)}</Typography>
+      }
+
       <Stack component={Card} spacing={3} sx={{
         p: 3,
         backdropFilter: 'none',
       }}>
-        {/* <RHFTextField
-          name="oldPassword"
-          type={password.value ? 'text' : 'password'}
-          label="Old Password"
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={password.onToggle} edge="end">
-                  <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        /> */}
+        {/* {
+          usedAuthType !== "metamask" &&
+          <RHFTextField
+            name="oldPassword"
+            type={password.value ? 'text' : 'password'}
+            label="Old Password"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={password.onToggle} edge="end">
+                    <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+        } */}
 
         <RHFTextField
           name="newPassword"

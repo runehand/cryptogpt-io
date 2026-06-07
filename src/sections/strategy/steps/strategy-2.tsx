@@ -32,11 +32,11 @@ const Textarea = styled(BaseTextareaAutosize)(
 `,
 );
 
-interface DashboardStrategyStep1Props extends BoxProps {
+interface StrategyStep1Props extends BoxProps {
 
 };
 
-export default function DashboardStrategyStep2({ sx, ...other }: DashboardStrategyStep1Props) {
+export default function StrategyStep2({ sx, ...other }: StrategyStep1Props) {
     const coin1 = useStrategy((state) => state.coin1);
     const setCoin1 = useStrategy((state) => state.setCoin1);
     const coin2 = useStrategy((state) => state.coin2);

@@ -4,7 +4,7 @@ import { Box, Grid } from '@mui/material';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { getUserProfileInfo } from 'src/auth/context/jwt/utils';
+import { getUserProfileData } from 'src/auth/context/jwt/utils';
 
 import Transactions from '../transactions';
 import OverviewCredit from '../overview-credit';
@@ -17,7 +17,7 @@ import OverviewInterfaceStats from '../overview-chart-interface-stats';
 
 export default function DashboardView() {
     const smUp = useResponsive("up", "sm")
-    const user_profile = getUserProfileInfo();
+    const user_profile = getUserProfileData();
     const is_admin = user_profile?.is_admin || false;
 
     return (

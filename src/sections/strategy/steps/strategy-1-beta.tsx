@@ -8,7 +8,7 @@ import { useStrategy } from "src/store/strategy/useStrategy";
 
 import Image from 'src/components/image';
 
-import DashboardStrategyCoinSelector from '../dashboard-strategy-coin-selector';
+import StrategyCoinSelector from '../strategy-coin-selector';
 
 interface DataPoint {
     date: string;
@@ -17,11 +17,11 @@ interface DataPoint {
     action?: 'Buy' | 'Sell';
 }
 
-interface DashboardStrategyStep1BetaProps extends BoxProps {
+interface StrategyStep1BetaProps extends BoxProps {
 
 };
 
-export default function DashboardStrategyStep1Beta({ sx, ...other }: DashboardStrategyStep1BetaProps) {
+export default function StrategyStep1Beta({ sx, ...other }: StrategyStep1BetaProps) {
     const coin1 = useStrategy((state) => state.coin1);
     const setCoin1 = useStrategy((state) => state.setCoin1);
     const coin2 = useStrategy((state) => state.coin2);
@@ -46,7 +46,7 @@ export default function DashboardStrategyStep1Beta({ sx, ...other }: DashboardSt
                 whitespace: 'nowrap',
                 mr: 11,
             }}>1. Start, Select Pair</Typography>
-            <DashboardStrategyCoinSelector currency={coin1} handleChange={setCoin1} />
+            <StrategyCoinSelector currency={coin1} handleChange={setCoin1} />
             <Box sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -61,7 +61,7 @@ export default function DashboardStrategyStep1Beta({ sx, ...other }: DashboardSt
                 </ButtonBase>
             </Box>
 
-            <DashboardStrategyCoinSelector currency={coin2} handleChange={setCoin2} />
+            <StrategyCoinSelector currency={coin2} handleChange={setCoin2} />
         </Stack>
 
 

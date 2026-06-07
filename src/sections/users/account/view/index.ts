@@ -1,1 +1,1 @@
-export { default as DashboardAccountView } from "./dashboard-account-view";
+export { default as AccountView } from "./account-view";

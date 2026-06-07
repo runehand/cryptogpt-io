@@ -36,10 +36,18 @@ export async function POST(req: Request) {
     const customer_id = stripeCustomer[0]?.customer_id;
 
     if (payment_intent.customer === customer_id && payment_intent.status === 'succeeded') {
-      const { error } = await supabase
-        .from('user_crgpt_token_history')
-        .insert([{ user_id: user?.id, amount, address }]);
-      if (error) return NextResponse.json({ success: false, error }, { status: 400 });
+
+      if (address) {
+        const { error } = await supabase
+          .from('user_crgpt_token_history')
+          .insert([{ user_id: user?.id, amount, address }]);
+        if (error) return NextResponse.json({ success: false, error }, { status: 400 });
+      } else {
+        const { error } = await supabase
+          .from('user_crgpt_token_history')
+          .insert([{ user_id: user?.id, amount, status: 'address_waiting' }]);
+        if (error) return NextResponse.json({ success: false, error }, { status: 400 });
+      }
       return NextResponse.json({ success: true });
     }
     return NextResponse.json({ success: false });

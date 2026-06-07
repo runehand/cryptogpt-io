@@ -2,6 +2,7 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import ListItemText from '@mui/material/ListItemText';
+import Button from '@mui/material/Button';
 
 import { fDate } from 'src/utils/format-time';
 
@@ -12,13 +13,17 @@ import Label from 'src/components/label';
 type Props = {
   row: any;
   index: number;
+  setIsModalOpened: (value: boolean) => void;
+  setCurrentID: (value: string) => void;
 };
 
 export default function InvoiceTableRow({
   row,
-  index
+  index,
+  setIsModalOpened,
+  setCurrentID
 }: Props) {
-  const { address, amount, created_at, status } = row;
+  const { address, amount, created_at, status, id, explorer_url } = row;
 
   return (
     <TableRow hover>
@@ -49,18 +54,41 @@ export default function InvoiceTableRow({
 
       <TableCell>{fDate(created_at)}</TableCell>
 
-      <TableCell>
+      <TableCell sx={{ width: '160px', textAlign: 'center' }}>
         <Label
           variant="soft"
           color={
             (status === 'paid' && 'success') ||
             (status === "admin_waiting" && 'warning') ||
-            (status === 'overdue' && 'error') ||
+            (status === 'address_waiting' && 'error') ||
             'default'
           }
         >
-          {status === "admin_waiting" ? "Pending" : status}
+          {(() => {
+            switch (status) {
+              case "admin_waiting":
+                return "pending delivery";
+              case "address_waiting":
+                return "Awaiting address";
+              case "paid":
+                return "PAID & DELIVERED";
+              default:
+                return status;
+            }
+          })()}
         </Label>
+      </TableCell>
+      <TableCell sx={{ width: '100px', textAlign: 'center' }}>
+        {status === 'address_waiting' && (
+          <Button variant="contained" color="primary" size="small" sx={{ ml: 1 }} onClick={() => { setIsModalOpened(true); setCurrentID(id) }}>
+            Edit
+          </Button>
+        )}
+        {status === 'paid' && (
+          <Button variant="contained" color="primary" size="small" sx={{ ml: 1 }} onClick={() => window.open(explorer_url, '_blank')}>
+            View
+          </Button>
+        )}
       </TableCell>
     </TableRow>
   );

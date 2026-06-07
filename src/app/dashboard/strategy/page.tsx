@@ -1,4 +1,4 @@
-import { DashboardStrategyView } from 'src/sections/strategy/view';
+import { StrategyView } from 'src/sections/strategy/view';
 
 // ----------------------------------------------------------------------
 
@@ -7,5 +7,5 @@ export const metadata = {
 };
 
 export default function Page() {
-  return <DashboardStrategyView />;
+  return <StrategyView />;
 }

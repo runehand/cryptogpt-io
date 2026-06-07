@@ -6,6 +6,7 @@ import { supabase } from 'src/lib/supabase';
 const publicEndpoints = [
     '/api/auth',
     '/api/profile/status/',
+    '/api/video-stream',
 ]
 
 export async function middleware(request: NextRequest) {

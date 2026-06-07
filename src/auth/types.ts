@@ -4,13 +4,13 @@ import { LogoutOptions, PopupLoginOptions, RedirectLoginOptions } from '@auth0/a
 
 export type ActionMapType<M extends { [index: string]: any }> = {
   [Key in keyof M]: M[Key] extends undefined
-    ? {
-        type: Key;
-      }
-    : {
-        type: Key;
-        payload: M[Key];
-      };
+  ? {
+    type: Key;
+  }
+  : {
+    type: Key;
+    payload: M[Key];
+  };
 };
 
 export type AuthUserType = null | Record<string, any>;
@@ -55,6 +55,7 @@ export type JWTContextType = CanRemove & {
   loginWithBinance: (email: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   setUser: (user: any, access_token: string) => Promise<void>;
+  loginAsDemoUser: () => Promise<void>;
   logout: () => Promise<void>;
 };
 

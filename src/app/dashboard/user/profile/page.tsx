@@ -1,4 +1,4 @@
-import { DashboardProfileView } from 'src/sections/users/profile/view';
+import { ProfileView } from 'src/sections/users/profile/view';
 
 // ----------------------------------------------------------------------
 
@@ -7,5 +7,5 @@ export const metadata = {
 };
 
 export default function Page() {
-  return <DashboardProfileView />;
+  return <ProfileView />;
 }

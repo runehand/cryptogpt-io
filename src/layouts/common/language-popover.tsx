@@ -5,7 +5,7 @@ import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 
 import { flags } from 'src/assets/data';
-import { getUserProfileInfo } from 'src/auth/context/jwt/utils';
+import { getUserProfileData } from 'src/auth/context/jwt/utils';
 
 import Iconify from 'src/components/iconify';
 import { varHover } from 'src/components/animate';
@@ -14,8 +14,14 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 // ----------------------------------------------------------------------
 
 export default function LanguagePopover() {
-  const user_profile = getUserProfileInfo();
-  const allLangs = useMemo(() => user_profile?.languages || [], [user_profile?.languages]);
+  const user_profile = getUserProfileData();
+  const allLangs = useMemo(
+    () =>
+      (user_profile?.languages || [])
+        .filter(Boolean)
+        .map((lang) => (typeof lang === 'string' ? { code: lang } : lang)),
+    [user_profile?.languages]
+  );
   const popover = usePopover();
   const [currentLang, setCurrentLang] = useState<any>(null);
 
@@ -30,6 +36,8 @@ export default function LanguagePopover() {
     setCurrentLang(lang);
     popover.onClose();
   }, [popover]);
+
+  const currentFlag = flags[currentLang?.code] ?? flags.en;
 
   return (
     <>
@@ -47,20 +55,25 @@ export default function LanguagePopover() {
           }),
         }}
       >
-        <Iconify icon={flags[currentLang.code].icon} sx={{ borderRadius: 0.65, width: 28 }} />
+        <Iconify icon={currentFlag.icon} sx={{ borderRadius: 0.65, width: 28 }} />
       </IconButton>}
 
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 160 }}>
-        {allLangs.length > 0 && allLangs.map((option) => (
-          <MenuItem
-            key={option.code}
-            selected={option.code === currentLang?.code}
-            onClick={() => handleChangeLang(option)}
-          >
-            <Iconify icon={flags[option.code].icon} sx={{ borderRadius: 0.65, width: 28, mr: 1 }} />
-            {flags[option.code].name}
-          </MenuItem>
-        ))}
+        {allLangs.length > 0 &&
+          allLangs.map((option) => {
+            const langFlag = flags[option.code] ?? flags.en;
+
+            return (
+              <MenuItem
+                key={option.code}
+                selected={option.code === currentLang?.code}
+                onClick={() => handleChangeLang(option)}
+              >
+                <Iconify icon={langFlag.icon} sx={{ borderRadius: 0.65, width: 28, mr: 1 }} />
+                {langFlag.name}
+              </MenuItem>
+            );
+          })}
       </CustomPopover>
     </>
   );

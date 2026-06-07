@@ -31,7 +31,9 @@ const AccountCreditAmount = ({ isLoading }: { isLoading: boolean }) => {
   }, [isLoading]);
 
   return (
-    <Card>
+    <Card sx={{
+      backdropFilter: 'none',
+    }}>
       <CardHeader title={`My Credit: ${currentAmount}`} sx={{ marginBottom: "20px" }} />
     </Card >
   )

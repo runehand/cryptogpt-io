@@ -10,7 +10,7 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { _userAbout, _userFeeds } from 'src/_mock';
-import { getUserProfileInfo } from 'src/auth/context/jwt/utils';
+import { getUserProfileData } from 'src/auth/context/jwt/utils';
 
 import Iconify from 'src/components/iconify';
 
@@ -92,7 +92,7 @@ export default function ProfileContainer({
         setCurrentTab(newValue);
     }, []);
 
-    const user_profile = getUserProfileInfo();
+    const user_profile = getUserProfileData();
     console.log('user_profile', user_profile);
 
     return (

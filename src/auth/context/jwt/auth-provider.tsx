@@ -3,12 +3,21 @@
 import { useMemo, useEffect, useReducer, useCallback } from 'react';
 
 import axios, { endpoints } from 'src/utils/axios';
+import { supabase } from "src/utils/supabaseClient";
+
+import { useUserProfile } from 'src/store/user/userProfile';
+import {
+  DEMO_USER,
+  setDemoSession,
+  clearDemoSession,
+  DEMO_ACCESS_TOKEN,
+  DEMO_USER_PROFILE,
+  isDemoSessionEnabled,
+} from 'src/auth/demo-user';
 
 import { AuthContext } from './auth-context';
 import { AuthUserType, ActionMapType, AuthStateType } from '../../types';
 import {
-  getUserInfo,
-  setUserInfo,
   isValidToken,
   getAccessToken,
   setAccessToken,
@@ -91,21 +100,46 @@ type Props = {
 
 export function AuthProvider({ children }: Props) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const setUserInfo = useUserProfile((_state) => _state.setUserInfo);
+  const setUserProfileInfo = useUserProfile((_state) => _state.setUserProfileInfo);
 
   const initialize = useCallback(async () => {
     try {
-      const accessToken = getAccessToken();
-      // console.log('accessToken', accessToken);
+      const demoModeEnabled = process.env.NEXT_PUBLIC_ENABLE_DEMO_USER === 'true';
+      const demoSessionEnabled = demoModeEnabled || isDemoSessionEnabled();
 
-      if (accessToken !== 'undefined' && accessToken && isValidToken(accessToken)) {
-        setAccessToken(accessToken);
-        const user = getUserInfo();
+      if (demoSessionEnabled) {
+        setDemoSession();
+        setUserInfo(DEMO_USER);
+        setUserProfileInfo(DEMO_USER_PROFILE);
 
         dispatch({
           type: Types.INITIAL,
           payload: {
             user: {
-              ...user,
+              ...DEMO_USER,
+              access_token: DEMO_ACCESS_TOKEN,
+              refresh_token: DEMO_ACCESS_TOKEN,
+            },
+          },
+        });
+
+        return;
+      }
+
+      const accessToken = getAccessToken();
+
+      if (accessToken !== 'undefined' && accessToken && isValidToken(accessToken)) {
+        const { userInfo, userProfileInfo } = await setAccessToken(accessToken);
+        // const user = getUserInfo();
+        setUserInfo(userInfo);
+        setUserProfileInfo(userProfileInfo);
+
+        dispatch({
+          type: Types.INITIAL,
+          payload: {
+            user: {
+              ...userInfo,
               accessToken,
             },
           },
@@ -127,7 +161,7 @@ export function AuthProvider({ children }: Props) {
         },
       });
     }
-  }, []);
+  }, [setUserInfo, setUserProfileInfo]);
 
   useEffect(() => {
     initialize();
@@ -154,10 +188,6 @@ export function AuthProvider({ children }: Props) {
     if (session) {
       await setAccessToken(access_token);
       setRefreshToken(refresh_token);
-    }
-    if (user) {
-      console.log('user', user);
-      setUserInfo(user);
     }
 
     dispatch({
@@ -194,7 +224,6 @@ export function AuthProvider({ children }: Props) {
       const { message } = error;
       throw new Error(message || 'Send code failed');
     }
-    console.log('data', data);
   }, []);
 
   // LOGIN WITH CODE VERIFY - EMAIL OR PHONE
@@ -220,10 +249,6 @@ export function AuthProvider({ children }: Props) {
     if (session) {
       await setAccessToken(access_token);
       setRefreshToken(refresh_token);
-    }
-    if (user) {
-      console.log('user', user);
-      setUserInfo(user);
     }
 
     dispatch({
@@ -274,10 +299,11 @@ export function AuthProvider({ children }: Props) {
       throw new Error(error);
     } else {
       if (token) {
+        await supabase.auth.setSession({
+          access_token: token,
+          refresh_token: token,
+        });
         await setAccessToken(token);
-      }
-      if (user) {
-        setUserInfo(user);
       }
 
       dispatch({
@@ -303,9 +329,6 @@ export function AuthProvider({ children }: Props) {
       const { user, token } = responseData.data;
       if (token) {
         await setAccessToken(token);
-      }
-      if (user) {
-        setUserInfo(user);
       }
 
       dispatch({
@@ -336,7 +359,6 @@ export function AuthProvider({ children }: Props) {
     }
 
     const { user } = data;
-    console.log('user', user);
 
     if (!user) {
       throw new Error("Can't register user");
@@ -345,7 +367,6 @@ export function AuthProvider({ children }: Props) {
 
   const setUser = useCallback(async (user: any, access_token: string) => {
     await setAccessToken(access_token);
-    setUserInfo(user);
 
     dispatch({
       type: Types.LOGIN,
@@ -358,6 +379,23 @@ export function AuthProvider({ children }: Props) {
     });
   }, []);
 
+  const loginAsDemoUser = useCallback(async () => {
+    setDemoSession();
+    setUserInfo(DEMO_USER);
+    setUserProfileInfo(DEMO_USER_PROFILE);
+
+    dispatch({
+      type: Types.LOGIN,
+      payload: {
+        user: {
+          ...DEMO_USER,
+          access_token: DEMO_ACCESS_TOKEN,
+          refresh_token: DEMO_ACCESS_TOKEN,
+        },
+      },
+    });
+  }, [setUserInfo, setUserProfileInfo]);
+
   // LOGOUT
   const logout = useCallback(async () => {
     try {
@@ -365,17 +403,21 @@ export function AuthProvider({ children }: Props) {
       setAccessToken(null);
       setRefreshToken(null);
       setUserInfo(null);
+      setUserProfileInfo(null);
       loadUserProfileData(false);
+      clearDemoSession();
     } catch (error) {
       setAccessToken(null);
       setRefreshToken(null);
       setUserInfo(null);
+      setUserProfileInfo(null);
       loadUserProfileData(false);
+      clearDemoSession();
     }
     dispatch({
       type: Types.LOGOUT,
     });
-  }, []);
+  }, [setUserInfo, setUserProfileInfo]);
 
   // ----------------------------------------------------------------------
 
@@ -399,6 +441,7 @@ export function AuthProvider({ children }: Props) {
       loginWithBinance,
       register,
       setUser,
+      loginAsDemoUser,
       logout,
     }),
     [
@@ -409,6 +452,7 @@ export function AuthProvider({ children }: Props) {
       loginWithMetamask,
       loginWithBinance,
       logout,
+      loginAsDemoUser,
       setUser,
       register,
       state.user,

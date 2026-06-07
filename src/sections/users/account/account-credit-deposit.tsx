@@ -1,3 +1,5 @@
+
+
 import React, { useState, useEffect, useCallback } from 'react';
 
 import { styled } from '@mui/system';
@@ -347,7 +349,10 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
   const isDepositButtonDisabled = !!cardElementState.errorMessage || !!cardPaymentState.errorMessage || !cardElementState.complete || !amount;
 
   return (
-    <Card sx={{ marginTop: 3 }}>
+    <Card sx={{
+      marginTop: 3,
+      backdropFilter: 'none',
+    }}>
       <CardHeader title="Deposit" />
 
       <Stack direction="column" sx={{ width: "100%", p: 3, "#card-element": { width: '100%' } }}>

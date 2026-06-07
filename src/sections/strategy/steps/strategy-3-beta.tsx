@@ -20,11 +20,11 @@ interface DataPoint {
 }
 
 
-interface DashboardStrategyStep3BetaProps extends BoxProps {
+interface StrategyStep3BetaProps extends BoxProps {
 
 };
 
-export default function DashboardStrategyStep3Beta({ sx, ...other }: DashboardStrategyStep3BetaProps) {
+export default function StrategyStep3Beta({ sx, ...other }: StrategyStep3BetaProps) {
     const coin1 = useStrategy((state) => state.coin1);
     const setCoin1 = useStrategy((state) => state.setCoin1);
     const coin2 = useStrategy((state) => state.coin2);

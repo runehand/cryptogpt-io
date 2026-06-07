@@ -1,4 +1,4 @@
-import { DashboardView } from 'src/sections/dashboard/view';
+import { TradingView } from 'src/sections/trading/view';
 
 // ----------------------------------------------------------------------
 
@@ -7,5 +7,5 @@ export const metadata = {
 };
 
 export default function Page() {
-  return <DashboardView />;
+  return <TradingView />;
 }

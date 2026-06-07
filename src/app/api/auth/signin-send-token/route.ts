@@ -22,6 +22,7 @@ export async function POST(req: Request) {
       //   phoneRedirectTo: 'https://example.com/welcome'
       // }
     });
+    console.log(response);
     return NextResponse.json(response);
   } catch (error) {
     console.log(error);

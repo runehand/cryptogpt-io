@@ -3,6 +3,8 @@ import { useEffect, useCallback } from 'react';
 import { paths } from 'src/routes/paths';
 import { useRouter, useSearchParams } from 'src/routes/hooks';
 
+import { getUserProfileData } from 'src/auth/context/jwt/utils';
+
 import { SplashScreen } from 'src/components/loading-screen';
 
 import { useAuthContext } from '../hooks';
@@ -32,7 +34,15 @@ function Container({ children }: Props) {
 
   const check = useCallback(() => {
     if (authenticated) {
-      router.replace(returnTo);
+      console.log("authenticated-guest-guard", authenticated);
+
+      const user_profile = getUserProfileData();
+      // console.log('user_profile-oauth', user_profile)
+      if (user_profile?.terms) {
+        router.replace(returnTo);
+      } else {
+        router.replace(paths.dashboard.user.profileSetup);
+      }
     }
   }, [authenticated, returnTo, router]);
 

@@ -7,13 +7,13 @@ const OPTIONS = {
     style: {
         base: {
             fontSize: '16px',
-            color: '#424770',
+            color: '#ffffff',
             '::placeholder': {
                 color: '#aab7c4',
             },
         },
         invalid: {
-            color: '#9e2146',
+            color: '#FF5630',
         },
     },
 }

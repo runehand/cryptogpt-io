@@ -16,7 +16,7 @@ import { useCarousel } from 'src/components/carousel';
 import { StyledDialog } from 'src/components/styled-component';
 
 import InternetNoiseItem from '../internet-noise-item';
-import DashboardStrategyCoinSelector from '../dashboard-strategy-coin-selector';
+import StrategyCoinSelector from '../strategy-coin-selector';
 
 const filter = createFilterOptions<any>();
 
@@ -27,11 +27,11 @@ interface DataPoint {
     action?: 'Buy' | 'Sell';
 }
 
-interface DashboardStrategyStep1Props extends BoxProps {
+interface StrategyStep1Props extends BoxProps {
 
 };
 
-export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrategyStep1Props) {
+export default function StrategyStep1({ sx, ...other }: StrategyStep1Props) {
     const theme = useTheme();
     const coin1 = useStrategy((state) => state.coin1);
     const setCoin1 = useStrategy((state) => state.setCoin1);
@@ -138,7 +138,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                     </IconButton>
 
                     <Stack direction="row" alignItems='center' justifyContent="center" spacing={2}>
-                        <DashboardStrategyCoinSelector size={smUp ? "medium" : 'small'} currency={coin1} handleChange={setCoin1} />
+                        <StrategyCoinSelector size={smUp ? "medium" : 'small'} currency={coin1} handleChange={setCoin1} />
                         <Box sx={{
                             display: 'flex',
                             flexDirection: 'column',
@@ -152,7 +152,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                                 }} />
                             </ButtonBase>
                         </Box>
-                        <DashboardStrategyCoinSelector size={smUp ? "medium" : 'small'} currency={coin2} handleChange={setCoin2} />
+                        <StrategyCoinSelector size={smUp ? "medium" : 'small'} currency={coin2} handleChange={setCoin2} />
 
                         <Select size={smUp ? "medium" : 'small'}
                             value={timeframe}

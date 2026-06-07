@@ -1,10 +1,9 @@
 import { m } from 'framer-motion';
-import { useMemo, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
-import { ButtonBase } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import { alpha } from '@mui/material/styles';
 import MenuItem from '@mui/material/MenuItem';
@@ -20,7 +19,6 @@ import axios, { endpoints } from 'src/utils/axios';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { useUserProfile } from 'src/store/user/userProfile';
-import { getUserProfileInfo } from 'src/auth/context/jwt/utils';
 
 import Iconify from 'src/components/iconify';
 import { varHover } from 'src/components/animate';
@@ -49,15 +47,15 @@ export default function AccountPopover() {
   const router = useRouter();
 
   const { logout, user } = useAuthContext();
-
-  const user_profile = getUserProfileInfo();
-
   const popover = usePopover();
   const userStatusDialogVisible = useBoolean(false);
 
   const StatusData = useUserProfile(state => state.statusData);
+  const setStatusData = useUserProfile((state) => state.setStatusData);
   const status = useUserProfile((state) => state.status);
   const setStatus = useUserProfile((state) => state.setStatus);
+  const userProfileInfo = useUserProfile((state) => state.userProfileInfo);
+  const [defaultStatus, setDefaultStatus] = useState<string[]>([]);
 
   const renderedUserStatusData = useMemo(() => StatusData.reduce((acc, _status) => {
     if (!acc[_status.type]) {
@@ -65,28 +63,39 @@ export default function AccountPopover() {
     }
     acc[_status.type].push({
       ..._status,
-      isSelected: status.includes(_status.type)
     });
+    setDefaultStatus(Object.keys(acc).map(key => (acc[key].find(item => item.is_default)?.id || acc[key][0].id)));
     return acc;
-  }, {}), [StatusData, status]);
-  console.log("renderedUserStatusData", renderedUserStatusData);
+  }, {}), [StatusData]);
+
 
   useEffect(() => {
-    const fetchStatus = async () => {
+    const fetchStatusData = async () => {
       try {
-        const response = await axios.get(endpoints.profile.index);
-        console.log("data", response.data);
+        const response = await axios.get(endpoints.profile.status);
         if (response.data.length > 0) {
-          setStatus(response.data[0].status.split(','));
+          setStatusData(response.data.map((item) => ({
+            ...item,
+            id: item.value,
+          })));
         } else {
-          setStatus([]);
+          setStatusData([]);
         }
       } catch (error) {
-        console.error(error);
+        // console.error(error);
       }
     }
-    fetchStatus();
-  }, [setStatus])
+    fetchStatusData();
+  }, [setStatusData])
+
+
+  useEffect(() => {
+    if (userProfileInfo.status) {
+      setStatus(userProfileInfo.status.split(','));
+    } else {
+      setStatus(defaultStatus);
+    }
+  }, [defaultStatus, userProfileInfo, setStatus])
 
   const handleLogout = async () => {
     try {
@@ -104,7 +113,6 @@ export default function AccountPopover() {
   };
 
   const handleChangeUserStatus = (_status: UserStatusType) => {
-    console.log(_status);
     const needReplaceStatus = status.map((item) => StatusData.find(_item => _item.id === item)).findIndex(item => item?.type === _status.type);
     const currentStatusString = status.join(',');
     let newStatusString = "";
@@ -121,7 +129,7 @@ export default function AccountPopover() {
       if (newStatusString !== currentStatusString) {
         axios.put(endpoints.profile.status, { status: newStatusString })
           .then((response) => {
-            console.log("response", response);
+            // console.log("response", response);
           })
           .catch((error) => {
             console.error(error);
@@ -131,7 +139,6 @@ export default function AccountPopover() {
       console.error(error);
     }
   }
-  console.log("status", status);
 
   return (
     <>
@@ -151,8 +158,8 @@ export default function AccountPopover() {
           }}
         >
           <Avatar
-            alt={user_profile?.user_name || ""}
-            src={user_profile?.avatar || ''}
+            alt={userProfileInfo?.user_name || ""}
+            src={userProfileInfo?.avatar || ''}
             sx={{
               mx: 'auto',
               width: 36,
@@ -163,7 +170,7 @@ export default function AccountPopover() {
               border: theme => `solid 1px ${theme.palette.primary.main}`,
             }}
           >
-            {user_profile?.user_name?.charAt(0).toUpperCase() || 'J'}
+            {userProfileInfo?.user_name?.charAt(0).toUpperCase() || 'J'}
           </Avatar>
         </IconButton>
 
@@ -196,7 +203,7 @@ export default function AccountPopover() {
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 200, p: 0 }}>
         <Box sx={{ p: 2, pb: 1.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {user_profile?.user_name}
+            {userProfileInfo?.user_name}
           </Typography>
 
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
@@ -216,7 +223,7 @@ export default function AccountPopover() {
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <ButtonBase
+        <MenuItem
           sx={{
             px: 2,
             py: 1,
@@ -239,9 +246,9 @@ export default function AccountPopover() {
           </Typography>
 
           <IconButton size="small">
-            <Iconify icon="mingcute:right-line" />
+            <Iconify icon="mingcute:right-line" sx={{ mr: '0 !important' }} />
           </IconButton>
-        </ButtonBase>
+        </MenuItem>
 
         <StyledDialog open={userStatusDialogVisible.value} onClose={() => userStatusDialogVisible.onFalse()}>
           <Stack direction='column' alignItem="center" spacing={2} sx={{
@@ -265,8 +272,8 @@ export default function AccountPopover() {
               position: 'relative',
             }}>
               <Avatar
-                alt={user_profile?.user_name || ""}
-                src={user_profile?.avatar || ''}
+                alt={userProfileInfo?.user_name || ""}
+                src={userProfileInfo?.avatar || ''}
                 sx={{
                   mx: 'auto',
                   width: { xs: 64, md: 96 },
@@ -277,7 +284,7 @@ export default function AccountPopover() {
                   border: theme => `solid 2px ${theme.palette.primary.main}`,
                 }}
               >
-                {user_profile?.user_name?.charAt(0).toUpperCase() || 'J'}
+                {userProfileInfo?.user_name?.charAt(0).toUpperCase() || 'J'}
               </Avatar>
 
               <Box sx={{

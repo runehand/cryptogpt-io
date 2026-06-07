@@ -10,7 +10,7 @@ import AccountCreditDeposit from './account-credit-deposit';
 export default function AccountCredit() {
   const [isLoading, setIsLoading] = useState(false);
   return (
-    <Grid container spacing={5} disableEqualOverflow>
+    <Grid container spacing={1} disableEqualOverflow>
       <Grid xs={12} md={12}>
         <AccountCreditAmount isLoading={isLoading} />
       </Grid>

@@ -1,8 +1,11 @@
 import Stack from '@mui/material/Stack';
 import AppBar from '@mui/material/AppBar';
-import { Box, Button } from '@mui/material';
 import Toolbar from '@mui/material/Toolbar';
+import { Box, Link, Button } from '@mui/material';
 import { alpha, useTheme } from '@mui/material/styles';
+
+import { paths } from 'src/routes/paths';
+import { RouterLink } from 'src/routes/components';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
@@ -68,7 +71,10 @@ export default function Header({ onOpenNav }: Props) {
                 <SettingsButton />
 
                 {
-                    isAuthenticated ? <AccountPopover /> : <Button variant="soft" color="primary">Login</Button>
+                    isAuthenticated ? <AccountPopover /> :
+                        <Link href={paths.auth.jwt.login} component={RouterLink}>
+                            <Button variant="soft" color="primary">Login</Button>
+                        </Link>
                 }
             </Stack>
         </>

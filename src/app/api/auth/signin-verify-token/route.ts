@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 
-import { supabase } from "src/lib/supabase";
+import { createCustomServerClient } from "src/utils/supabase";
 
 export async function POST(req: Request) {
   try {
+    const supabase = createCustomServerClient();
     const res = await req.json();
+
     const { email } = res;
     const { phone } = res;
     const { token } = res;
@@ -12,15 +14,15 @@ export async function POST(req: Request) {
     const options =
       type === "email"
         ? {
-            email,
-            token,
-            type: "email" as any,
-          }
+          email,
+          token,
+          type: "email" as any,
+        }
         : {
-            phone,
-            token,
-            type: "sms" as any,
-          };
+          phone,
+          token,
+          type: "sms" as any,
+        };
     const response = await supabase.auth.verifyOtp(options);
     console.log('response', response)
     const userId = response?.data?.user?.id;

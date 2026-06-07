@@ -14,7 +14,7 @@ import { useStrategy } from "src/store/strategy/useStrategy";
 
 import Iconify from 'src/components/iconify';
 
-import DashboardStrategyImaganize from '../dashboard-strategy-imagazine';
+import StrategyImaganize from '../strategy-imagazine';
 
 
 const Textarea = styled(BaseTextareaAutosize)(
@@ -32,11 +32,11 @@ const Textarea = styled(BaseTextareaAutosize)(
 `,
 );
 
-interface DashboardStrategyStep2BetaProps extends BoxProps {
+interface StrategyStep2BetaProps extends BoxProps {
 
 };
 
-export default function DashboardStrategyStep2Beta({ sx, ...other }: DashboardStrategyStep2BetaProps) {
+export default function StrategyStep2Beta({ sx, ...other }: StrategyStep2BetaProps) {
     const coin1 = useStrategy((state) => state.coin1);
     const setCoin1 = useStrategy((state) => state.setCoin1);
     const coin2 = useStrategy((state) => state.coin2);
@@ -227,7 +227,7 @@ export default function DashboardStrategyStep2Beta({ sx, ...other }: DashboardSt
                 </Stack>
             </Box>
 
-            <DashboardStrategyImaganize />
+            <StrategyImaganize />
         </Box>
     </Box>
 }
