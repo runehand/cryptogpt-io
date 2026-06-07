@@ -39,7 +39,7 @@ const uploadImage = async (imageData: Buffer) => {
       const response = await fetch(url, {
         method: 'PUT',
         headers,
-        body: imageData,
+        body: imageData as unknown as BodyInit,
       });
 
       if (response.status === 201) {
@@ -60,7 +60,7 @@ const uploadImage = async (imageData: Buffer) => {
 
 export async function POST(req: NextRequest) {
   try {
-    const formData = await req.formData();
+    const formData = (await req.formData()) as any;
     const prompt = formData.get('prompt') as string;
     const imageFile = formData.get('image') as File;
 
