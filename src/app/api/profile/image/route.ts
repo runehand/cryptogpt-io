@@ -45,7 +45,7 @@ const uploadImage = async (imageUrl: string) => {
         const response = await fetch(url, {
           method: 'PUT',
           headers,
-          body: imageBuffer,
+          body: imageBuffer as unknown as BodyInit,
         });
 
         if (response.status === 201) {
