@@ -2,6 +2,14 @@ import { paths } from 'src/routes/paths';
 
 import axios, { endpoints } from 'src/utils/axios';
 
+import {
+  DEMO_USER,
+  setDemoSession,
+  DEMO_ACCESS_TOKEN,
+  DEMO_USER_PROFILE,
+  isDemoSessionEnabled,
+} from 'src/auth/demo-user';
+
 // ----------------------------------------------------------------------
 
 function jwtDecode(token: string) {
@@ -23,6 +31,10 @@ function jwtDecode(token: string) {
 export const isValidToken = (accessToken: string) => {
   if (!accessToken) {
     return false;
+  }
+
+  if (accessToken === DEMO_ACCESS_TOKEN) {
+    return true;
   }
 
   const decoded = jwtDecode(accessToken);
@@ -55,6 +67,11 @@ export const tokenExpired = (exp: number) => {
 // ----------------------------------------------------------------------
 
 export const loadUserProfileData = async (flag: boolean = true) => {
+  if (isDemoSessionEnabled()) {
+    localStorage.setItem('userProfile', JSON.stringify(DEMO_USER_PROFILE));
+    return DEMO_USER_PROFILE;
+  }
+
   if (flag) {
     try {
       const response = await axios.get(endpoints.profile.index);
@@ -73,6 +90,11 @@ export const loadUserProfileData = async (flag: boolean = true) => {
 };
 
 export const loadUserData = async (accessToken) => {
+  if (accessToken === DEMO_ACCESS_TOKEN || isDemoSessionEnabled()) {
+    localStorage.setItem('user', JSON.stringify(DEMO_USER));
+    return DEMO_USER;
+  }
+
   try {
     const response = await axios.get(`${endpoints.auth.me}?token=${accessToken}`);
     localStorage.setItem('user', JSON.stringify(response.data.data.user));
@@ -93,6 +115,12 @@ export const getUserProfileData = () => {
 export const setAccessToken = async (accessToken: string | null) => {
   if (accessToken) {
     localStorage.setItem('access_token', accessToken);
+
+    if (accessToken === DEMO_ACCESS_TOKEN || isDemoSessionEnabled()) {
+      setDemoSession();
+      delete axios.defaults.headers.common.Authorization;
+      return { userInfo: DEMO_USER, userProfileInfo: DEMO_USER_PROFILE };
+    }
 
     axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
     axios.defaults.headers.common['Content-Type'] = `application/json`;

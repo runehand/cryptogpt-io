@@ -27,10 +27,10 @@ If you need to install or switch Node versions, consider using:
 
 ```bash
 # Install dependencies
-yarn install
+npm install
 
 # Start development server
-yarn dev
+npm run dev
 ```
 
 The application will be available at `http://localhost:8083`
@@ -49,17 +49,17 @@ npm run dev
 
 ## 📜 Available Scripts
 
-- `yarn dev` - Start development server on port 8083
-- `yarn start` - Start production server on port 8083
-- `yarn build` - Build the application for production
-- `yarn lint` - Run ESLint to check code quality
-- `yarn lint:fix` - Automatically fix ESLint issues
-- `yarn prettier` - Format code using Prettier
-- `yarn ts` - Run TypeScript type checking
-- `yarn ts:watch` - Run TypeScript type checking in watch mode
-- `yarn rm:all` - Remove all build artifacts and node_modules
-- `yarn re:start` - Clean install and start development server
-- `yarn re:build` - Clean install and build for production
+- `npm run dev` - Start development server on port 8083
+- `npm run start` - Start production server on port 8083
+- `npm run build` - Build the application for production
+- `npm run lint` - Run ESLint to check code quality
+- `npm run lint:fix` - Automatically fix ESLint issues
+- `npm run prettier` - Format code using Prettier
+- `npm run ts` - Run TypeScript type checking
+- `npm run ts:watch` - Run TypeScript type checking in watch mode
+- `npm run rm:all` - Remove all build artifacts and node_modules
+- `npm run re:start` - Clean install and start development server
+- `npm run re:build` - Clean install and build for production
 
 ## 🛠️ Tech Stack
 
@@ -79,7 +79,7 @@ npm run dev
 - **Trigger.dev** - Background jobs and cron tasks
 
 ### Blockchain & Web3
-- **wagmi** 2.9.11 - React Hooks for Ethereum
+- **wagmi** 2.12.7 - React Hooks for Ethereum
 - **viem** 2.x - TypeScript Ethereum library
 - **ethers** 6.13.0 - Ethereum library
 - **@metamask/sdk-react** - MetaMask integration
@@ -111,6 +111,9 @@ NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 NEXT_PUBLIC_SUPABASE_JWT_SECRET=your_supabase_jwt_secret
+
+# UI review
+NEXT_PUBLIC_ENABLE_DEMO_USER=true
 
 # Add other environment variables as needed
 ```
@@ -165,13 +168,13 @@ root/
 ### Build for Production
 
 ```bash
-yarn build
+npm run build
 ```
 
 ### Start Production Server
 
 ```bash
-yarn start
+npm run start
 ```
 
 ## 📝 Development Guidelines
@@ -187,7 +190,7 @@ yarn start
 
 1. Create a feature branch
 2. Make your changes
-3. Run `yarn lint` and `yarn ts` to check for errors
+3. Run `npm run lint` and `npm run ts` to check for errors
 4. Commit your changes
 5. Push to the branch
 6. Create a Pull Request

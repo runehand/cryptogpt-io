@@ -37,8 +37,13 @@ import { useSnackbar } from 'src/components/snackbar';
 // ----------------------------------------------------------------------
 
 export default function JwtLoginView() {
-  const { loginWithEmailAndPassword, loginWithCodeSend, loginWithCodeVerify, loginWithMetamask } =
-    useAuthContext();
+  const {
+    loginWithEmailAndPassword,
+    loginWithCodeSend,
+    loginWithCodeVerify,
+    loginWithMetamask,
+    loginAsDemoUser,
+  } = useAuthContext();
   const metaMask = useMetaMask();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -109,6 +114,22 @@ export default function JwtLoginView() {
     } catch (error) {
       console.error(error);
       setErrorMsg(typeof error === 'string' ? error : error.message);
+      isSubmitting.onFalse();
+    }
+  };
+
+  const handleDemoLogin = async () => {
+    setErrorMsg('');
+    isSubmitting.onTrue();
+    try {
+      await loginAsDemoUser();
+      enqueueSnackbar('Demo user loaded', { variant: 'success' });
+      router.replace(returnTo || paths.dashboard.root);
+    } catch (error) {
+      console.error(error);
+      setErrorMsg(typeof error === 'string' ? error : error.message);
+      enqueueSnackbar('Failed to load demo user', { variant: 'error' });
+    } finally {
       isSubmitting.onFalse();
     }
   };
@@ -375,6 +396,16 @@ export default function JwtLoginView() {
         )}
 
         <Divider />
+
+        <LoadingButton
+          fullWidth
+          variant="outlined"
+          color="primary"
+          loading={isSubmitting.value}
+          onClick={handleDemoLogin}
+        >
+          Continue as Demo User
+        </LoadingButton>
 
         <Button
           fullWidth

@@ -55,6 +55,7 @@ export type JWTContextType = CanRemove & {
   loginWithBinance: (email: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   setUser: (user: any, access_token: string) => Promise<void>;
+  loginAsDemoUser: () => Promise<void>;
   logout: () => Promise<void>;
 };
 

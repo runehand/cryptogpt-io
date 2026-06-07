@@ -6,6 +6,14 @@ import axios, { endpoints } from 'src/utils/axios';
 import { supabase } from "src/utils/supabaseClient";
 
 import { useUserProfile } from 'src/store/user/userProfile';
+import {
+  DEMO_USER,
+  setDemoSession,
+  clearDemoSession,
+  DEMO_ACCESS_TOKEN,
+  DEMO_USER_PROFILE,
+  isDemoSessionEnabled,
+} from 'src/auth/demo-user';
 
 import { AuthContext } from './auth-context';
 import { AuthUserType, ActionMapType, AuthStateType } from '../../types';
@@ -97,6 +105,28 @@ export function AuthProvider({ children }: Props) {
 
   const initialize = useCallback(async () => {
     try {
+      const demoModeEnabled = process.env.NEXT_PUBLIC_ENABLE_DEMO_USER === 'true';
+      const demoSessionEnabled = demoModeEnabled || isDemoSessionEnabled();
+
+      if (demoSessionEnabled) {
+        setDemoSession();
+        setUserInfo(DEMO_USER);
+        setUserProfileInfo(DEMO_USER_PROFILE);
+
+        dispatch({
+          type: Types.INITIAL,
+          payload: {
+            user: {
+              ...DEMO_USER,
+              access_token: DEMO_ACCESS_TOKEN,
+              refresh_token: DEMO_ACCESS_TOKEN,
+            },
+          },
+        });
+
+        return;
+      }
+
       const accessToken = getAccessToken();
 
       if (accessToken !== 'undefined' && accessToken && isValidToken(accessToken)) {
@@ -349,6 +379,23 @@ export function AuthProvider({ children }: Props) {
     });
   }, []);
 
+  const loginAsDemoUser = useCallback(async () => {
+    setDemoSession();
+    setUserInfo(DEMO_USER);
+    setUserProfileInfo(DEMO_USER_PROFILE);
+
+    dispatch({
+      type: Types.LOGIN,
+      payload: {
+        user: {
+          ...DEMO_USER,
+          access_token: DEMO_ACCESS_TOKEN,
+          refresh_token: DEMO_ACCESS_TOKEN,
+        },
+      },
+    });
+  }, [setUserInfo, setUserProfileInfo]);
+
   // LOGOUT
   const logout = useCallback(async () => {
     try {
@@ -358,12 +405,14 @@ export function AuthProvider({ children }: Props) {
       setUserInfo(null);
       setUserProfileInfo(null);
       loadUserProfileData(false);
+      clearDemoSession();
     } catch (error) {
       setAccessToken(null);
       setRefreshToken(null);
       setUserInfo(null);
       setUserProfileInfo(null);
       loadUserProfileData(false);
+      clearDemoSession();
     }
     dispatch({
       type: Types.LOGOUT,
@@ -392,6 +441,7 @@ export function AuthProvider({ children }: Props) {
       loginWithBinance,
       register,
       setUser,
+      loginAsDemoUser,
       logout,
     }),
     [
@@ -402,6 +452,7 @@ export function AuthProvider({ children }: Props) {
       loginWithMetamask,
       loginWithBinance,
       logout,
+      loginAsDemoUser,
       setUser,
       register,
       state.user,
